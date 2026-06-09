@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meridian — Build something worth sharing</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0c0e12;
+      --surface: #151820;
+      --border: #252a35;
+      --text: #e8eaed;
+      --muted: #8b93a7;
+      --accent: #6ee7b7;
+      --accent-dim: #34d399;
+      --glow: rgba(110, 231, 183, 0.15);
+      --radius: 12px;
+      --max: 1080px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* subtle grid background */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, var(--glow), transparent),
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 100% 100%, 64px 64px, 64px 64px;
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .wrap {
+      width: min(var(--max), 100% - 2rem);
+      margin-inline: auto;
+    }
+
+    /* header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+      background: rgba(12, 14, 18, 0.75);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.125rem;
+      letter-spacing: -0.02em;
+    }
+
+    .logo span { color: var(--accent); }
+
+    nav ul {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    nav a {
+      color: var(--muted);
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: var(--text); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 24px var(--glow);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover { border-color: var(--muted); }
+
+    /* hero */
+    .hero {
+      padding: 6rem 0 1rem;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--glow);
+      border: 1px solid rgba(110, 231, 183, 0.25);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.25rem, 5vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      max-width: 16ch;
+      margin-inline: auto;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.125rem;
+      max-width: 42ch;
+      margin: 1.25rem auto 2rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* preview card */
+    .preview {
+      margin-top: 4rem;
+      padding: 1px;
+      border-radius: calc(var(--radius) + 4px);
+      background: linear-gradient(135deg, var(--border), transparent 60%);
+    }
+
+    .preview-inner {
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .preview-bar {
+      display: flex;
+      gap: 6px;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-bar span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .preview-bar span:first-child { background: #f87171; }
+    .preview-bar span:nth-child(2) { background: #fbbf24; }
+    .preview-bar span:nth-child(3) { background: #4ade80; }
+
+    .preview-body {
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .stat {
+      padding: 1.25rem;
+      background: var(--bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* features */
+    .features {
+      padding: 5rem 0;
+    }
+
+    .section-head {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .section-head h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      padding: 1.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(110, 231, 183, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--glow);
+      color: var(--accent);
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* cta */
+    .cta {
+      padding: 4rem 0 6rem;
+    }
+
+    .cta-box {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-radius: calc(var(--radius) + 4px);
+      background: linear-gradient(135deg, var(--surface), var(--bg));
+      border: 1px solid var(--border);
+    }
+
+    .cta-box h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .cta-box p {
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    footer .wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      nav ul { display: none; }
+      .preview-body { grid-template-columns: 1fr; }
+      .hero { padding-top: 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap">
+      <nav>
+        <a href="#" class="logo"><span></span></a>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <a href="#contact" class="btn btn-secondary"></a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <h1>Build something <em>worth sharing</em></h1>
+        <p>A lightweight platform for teams who care about craft. Ship faster without the overhead.</p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-primary">Learn more</a>
+          <a href="#features" class="btn btn-ghost">See how it works</a>
+        </div>
+
+        <!-- <div class="preview">
+          <div class="preview-inner">
+            <div class="preview-bar">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="preview-body">
+              <div class="stat">
+                <div class="stat-value">2.4k</div>
+                <div class="stat-label">Active projects</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value">99.9%</div>
+                <div class="stat-label">Uptime this month</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value">&lt;50ms</div>
+                <div class="stat-label">Avg. response time</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+    </section>
+
+    <section class="features" id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Everything you need, nothing you don't</h2>
+          <p>Three pillars. Zero bloat.</p>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div class="card-icon">⚡</div>
+            <h3>Fast by default</h3>
+            <p>Optimized from the ground up. No spinners, no waiting — just instant feedback.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon">🔒</div>
+            <h3>Secure & private</h3>
+            <p>End-to-end encryption and granular permissions. Your data stays yours.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon">✦</div>
+            <h3>Beautifully simple</h3>
+            <p>Clean interfaces that get out of your way. Focus on what matters.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" id="contact">
+      <div class="wrap">
+        <div class="cta-box">
+          <h2>Ready to try it?</h2>
+          <p>Join thousands of teams already building with Meridian.</p>
+          <a href="#" class="btn btn-primary">Create your account</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="about">
+    <div class="wrap">
+      <span>© 2026 Meridian. Demo page.</span>
+      <span>Made with one HTML file.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
+
